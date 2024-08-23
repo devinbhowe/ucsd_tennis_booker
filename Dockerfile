@@ -1,16 +1,19 @@
 FROM python:3.9
 
+RUN pip install awscli
+
 # install google chrome
-RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -
-RUN sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list'
-RUN apt-get -y update --fix-missing
-RUN apt-get install -y google-chrome-stable
+# Reference: https://stackoverflow.com/questions/70955307/how-to-install-google-chrome-in-a-docker-container
+RUN apt-get install -y wget
+RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
+    && echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list
+RUN apt-get update && apt-get -y install google-chrome-stable
 
 # install chromedriver
 RUN apt-get install -yqq unzip
-RUN wget -O /tmp/chromedriver.zip http://chromedriver.storage.googleapis.com/`curl -sS chromedriver.storage.googleapis.com/LATEST_RELEASE`/chromedriver_linux64.zip
-RUN unzip /tmp/chromedriver.zip chromedriver -d /usr/local/bin/
-
+RUN wget -O /tmp/chromedriver.zip https://storage.googleapis.com/chrome-for-testing-public/`curl -sS https://googlechromelabs.github.io/chrome-for-testing/LATEST_RELEASE_STABLE`/linux64/chromedriver-linux64.zip
+RUN unzip /tmp/chromedriver.zip chromedriver-linux64/chromedriver -d /usr/local/bin/
+RUN mv /usr/local/bin/chromedriver-linux64/chromedriver /usr/local/bin/chromedriver
 # set display port to avoid crash
 ENV DISPLAY=:99
 
@@ -22,5 +25,4 @@ RUN pip install -r requirements.txt
 # copy code
 COPY /main.py /home/project/
 
-# TODO: Missing username/password cmd line args.
 CMD ["python", "./main.py"]

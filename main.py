@@ -1,22 +1,38 @@
+import json
+
+import os
 import time
 from selenium import webdriver
 from datetime import datetime, timedelta
 import calendar
-import sys
+import boto3
 
 from selenium.webdriver.common.by import By
 
 BOOKING_DAYS = ['MONDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY']
 DATE_STRFMT = '%m/%d/%Y'
-USERNAME = sys.argv[1]
-PASSWORD = sys.argv[2]
+AWS_REGION = 'us-west-2'
 
 
 class UcsdTennisBooker:
     def __init__(self):
-        self._driver = webdriver.Chrome()
-        url = 'https://rec.ucsd.edu/booking/674570b3-464b-4fd2-9d27-72ea02068d1d'
-        self._driver.get(url)
+
+        self._boto3_session = boto3.session.Session()
+        self._secrets_manager = self._boto3_session.client('secretsmanager', region_name=AWS_REGION)
+        get_secret_value_response = self._secrets_manager.get_secret_value(
+            SecretId='uscd-recreation-signin'
+        )
+        secret_dict = json.loads(get_secret_value_response['SecretString'])
+        self._email = secret_dict['email']
+        self._password = secret_dict['password']
+
+        option = webdriver.ChromeOptions()
+        option.add_argument('--headless')
+        option.add_argument('--no-sandbox')
+        option.add_argument('--disable-gpu')
+        self._driver = webdriver.Chrome(options=option)
+        self._driver.get('https://rec.ucsd.edu/booking/674570b3-464b-4fd2-9d27-72ea02068d1d')
+
         self._booked_dates = set()
         self._load_booked_dates()
 
@@ -35,11 +51,12 @@ class UcsdTennisBooker:
         file.write(day.strftime(DATE_STRFMT))
 
     def sign_in(self):
+
         email_filled = False
         for _ in range(10):
             try:
                 email_field = self._driver.find_element(by=By.ID, value="txtEmailUsernameLogin")
-                email_field.send_keys(USERNAME)
+                email_field.send_keys(self._email)
 
                 email_filled = True
                 break
@@ -56,7 +73,7 @@ class UcsdTennisBooker:
                 next_button.click()
 
                 password_field = self._driver.find_element(by=By.ID, value="txtSignInPassword")
-                password_field.send_keys(PASSWORD)
+                password_field.send_keys(self._password)
 
                 sign_in_button = self._driver.find_element(by=By.ID, value="btnSignIn")
                 sign_in_button.click()
@@ -103,13 +120,17 @@ class UcsdTennisBooker:
 
 driver = UcsdTennisBooker()
 driver.sign_in()
-for i in range(4):
-    date = datetime.today() + timedelta(days=i)
-    if calendar.day_name[date.weekday()].upper() not in BOOKING_DAYS:
-        continue
 
-    try:
-        driver.navigate_to_day(date)
-        driver.book_slot(date)
-    except Exception as e:
-        print(f"Unable to book {date.strftime('%m/%d/%Y')}: {e}")
+print("sign in successful")
+
+# for i in range(1):
+#     date = datetime.today() + timedelta(days=i)
+#     if calendar.day_name[date.weekday()].upper() not in BOOKING_DAYS:
+#         continue
+#
+#     try:
+#         driver.navigate_to_day(date)
+#         driver.book_slot(date)
+#         booking_made = True
+#     except Exception as e:
+#         print(f"Unable to book {date.strftime('%m/%d/%Y')}: {e}")
