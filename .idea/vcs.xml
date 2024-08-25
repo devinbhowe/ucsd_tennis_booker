@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="VcsDirectoryMappings">
+    <mapping directory="$PROJECT_DIR$/.." vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../school/AI/assignment_0" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../school/AI/assignment_1" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../school/GIOS/GIOS-pr1" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../school/GIOS/pr3" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../school/GIOS/pr4" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../school/KBAI/RPM-Project-Code" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../school/KBAI/miniproject1" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../school/KBAI/miniproject2" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../school/KBAI/miniproject3" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../school/KBAI/miniproject4" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../school/ML4T" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$" vcs="Git" />
+  </component>
+</project>
