@@ -1,7 +1,5 @@
 FROM python:3.9
 
-RUN pip install awscli
-
 # install google chrome
 # Reference: https://stackoverflow.com/questions/70955307/how-to-install-google-chrome-in-a-docker-container
 RUN apt-get install -y wget
