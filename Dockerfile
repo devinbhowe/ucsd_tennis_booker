@@ -1,4 +1,4 @@
-FROM python:3.9
+FROM --platform=linux/amd64 python:3.9
 
 # install google chrome
 # Reference: https://stackoverflow.com/questions/70955307/how-to-install-google-chrome-in-a-docker-container
@@ -23,4 +23,4 @@ RUN pip install -r requirements.txt
 # copy code
 COPY /main.py /home/project/
 
-CMD ["python", "./main.py"]
+ENTRYPOINT ["python", "main.py"]

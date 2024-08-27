@@ -1,6 +1,6 @@
 ## Running Locally
 
-- You must mount your AWS credentials to the docker container at runtime.
+- You must mount your AWS credentials to the docker container (`/root/.aws/credentials`) at runtime.
 
 ## Deployment
 
