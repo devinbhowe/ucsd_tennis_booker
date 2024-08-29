@@ -6,6 +6,7 @@ from selenium import webdriver
 from datetime import datetime, timedelta
 import calendar
 import boto3
+import traceback
 
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import NoSuchElementException
@@ -29,7 +30,7 @@ class UcsdTennisBooker:
         self._booking_days = {}
         dic = dict(config_response['Item']['booking_times'])
         for day in dic:
-            self._booking_days[day] = list(dic[day])
+            self._booking_days[day] = [int(hour) for hour in dic[day][1:-1].split(',')]
 
         # Get the username/password from AWS.
         secrets_manager = boto3_session.client('secretsmanager', region_name=self._aws_region)
@@ -163,9 +164,8 @@ class UcsdTennisBooker:
             try:
                 driver.navigate_to_day(date)
                 driver.book_slot(date, hours)
-                booking_made = True
             except Exception as e:
-                print(f"Unable to book {date.strftime('%m/%d/%Y')}: {e}")
+                print(f"Unable to book {date.strftime('%m/%d/%Y')}: {e} {traceback.format_exc()}")
 
 driver = UcsdTennisBooker()
 driver.sign_in()
